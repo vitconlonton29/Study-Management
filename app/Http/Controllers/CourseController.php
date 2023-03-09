@@ -25,12 +25,15 @@ class CourseController extends Controller
 
     public function store(Request $request)
     {
+        //store kiểu OOP
     $object = new Course();
-    $object ->name = $request->get('name');
+    $object ->fill($request->except('_token'));
     $object->save();
 
-    }
+    //điều hướng về trang course.index
+    return redirect()->route('course.index');
 
+    }
 
     public function show(Course $course)
     {
@@ -40,17 +43,36 @@ class CourseController extends Controller
 
     public function edit(Course $course)
     {
-        //
+        return view('course.edit', ['course' => $course]);
+
     }
 
 
-    public function update(UpdateCourseRequest $request, Course $course)
+    public function update(Request $request, Course $course)
     {
-        //
+        //Không hiểu sao cách này mình không làm được huhu
+//        $course ->update(
+//            $request->except(('_token', '_method'))
+//            //update trừ @csrf(token) và method(put)
+//        );
+
+        //Cách làm theo Query Builder (tạo ra câu lệnh SQL)
+        // Phù hợp cho tạo nhiều cái cùng 1 luc
+//        Course::where('id', $course->id)->update(
+//            $request->except(['_token', '_method'])
+//        );
+
+        //Cách làm theo OOP
+        //Phù hợp với
+        $course->fill($request->except('_token', '_method'));
+        $course->save();
+        return redirect()->route('course.index');
     }
 
     public function destroy(Course $course)
     {
-        //
+        $course->delete();
+        return redirect()->route('course.index');
+
     }
 }
