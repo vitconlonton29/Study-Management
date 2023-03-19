@@ -2,18 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Course\StoreRequest;
+use App\Http\Requests\Course\UpdateRequest;
 use App\Models\Course;
-use App\Http\Requests\StoreCourseRequest;
-use App\Http\Requests\UpdateCourseRequest;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $data = Course::get();
-        return view('course.index', ['data'=>$data,]);
+        //tìm kiếm
+        $search = $request->get('q');
+        $data = Course::query()
+            ->where('name', 'like', '%' . $search . '%')
+            //->get();
+            ->paginate(5);//Tự động phân trang luôn (ảo ma vkl)
+        $data->appends(['q'=>$search]); //truyền thêm vào để vừa phân trang vừa search
+//        $data = Course::get();
+        return view('course.index', [
+            'data' => $data,
+            'search' => $search,
+        ]);
     }
 
 
@@ -23,15 +33,16 @@ class CourseController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(StoreRequest $request): \Illuminate\Http\RedirectResponse
     {
         //store kiểu OOP
-    $object = new Course();
-    $object ->fill($request->except('_token'));
-    $object->save();
+        $object = new Course();
+        //$object->fill($request->except('_token')); //Cách 1
+        $object->fill($request->validated()); //Cách 2: chỉ lấy những thằng đã được khai báo validate
+        $object->save();
 
-    //điều hướng về trang course.index
-    return redirect()->route('course.index');
+        //điều hướng về trang course.index
+        return redirect()->route('course.index');
 
     }
 
@@ -48,7 +59,7 @@ class CourseController extends Controller
     }
 
 
-    public function update(Request $request, Course $course)
+    public function update(UpdateRequest $request, Course $course): \Illuminate\Http\RedirectResponse
     {
         //Không hiểu sao cách này mình không làm được huhu
 //        $course ->update(
@@ -63,13 +74,12 @@ class CourseController extends Controller
 //        );
 
         //Cách làm theo OOP
-        //Phù hợp với
         $course->fill($request->except('_token', '_method'));
         $course->save();
         return redirect()->route('course.index');
     }
 
-    public function destroy(Course $course)
+    public function destroy(Course $course): \Illuminate\Http\RedirectResponse
     {
         $course->delete();
         return redirect()->route('course.index');
