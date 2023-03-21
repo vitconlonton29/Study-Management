@@ -20,4 +20,8 @@ use Illuminate\Support\Facades\Route;
 //Cách viết route ngắn gọn hơn (khởi tạo tất cả trừ hàm show)
 Route::resource('course', \App\Http\Controllers\CourseController::class)->except('show');
 
+Route::get('test', function () {
+    return view('layout.master');
+});
+
 
