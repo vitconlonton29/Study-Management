@@ -12,13 +12,15 @@
     <link rel="shortcut icon" href="assets/images/favicon.ico">
 
     <!-- App css -->
-    <link href="{{ asset('css/icons.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{asset('css/app-creative.min.css')}}" rel="stylesheet" type="text/css" id="light-style" />
-    <link href="{{ asset('css/app-creative-dark.min.css') }}" rel="stylesheet" type="text/css" id="dark-style" />
+    <link href="{{ asset('css/icons.min.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('css/app-creative.min.css')}}" rel="stylesheet" type="text/css" id="light-style"/>
+    <link href="{{ asset('css/app-creative-dark.min.css') }}" rel="stylesheet" type="text/css" id="dark-style"/>
 
+    @stack('css')
 </head>
 
-<body  data-layout-config='{"leftSideBarTheme":"dark","layoutBoxed":false, "leftSidebarCondensed":false, "leftSidebarScrollable":false,"darkMode":true, "showRightSidebarOnStart": true}'>
+<body
+    data-layout-config='{"leftSideBarTheme":"dark","layoutBoxed":false, "leftSidebarCondensed":false, "leftSidebarScrollable":false,"darkMode":true, "showRightSidebarOnStart": true}'>
 
 @include('layout.sidebar')
 <div class="wrapper">
@@ -30,6 +32,7 @@
                 <div class="row">
                     <div class="col-12">
                         @yield('content')
+{{--                        ND cần ghi vào--}}
                     </div>
                 </div>
             </div>
@@ -37,9 +40,12 @@
         @include('layout.footer')
     </div>
 </div>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+{{--jquery nên chèn trươớc tất cả các scrip--}}
 <script src="{{ asset('js/vendor.min.js') }}"></script>
 <script src="{{ asset('js/app.min.js') }}"></script>
+
+@stack('js')
 
 </body>
 </html>
