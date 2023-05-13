@@ -1,4 +1,4 @@
-<form action="{{route('course.update', $course)}}" method="post">
+<form action="{{route('courses.update', $course)}}" method="post">
     @csrf
     @method('PUT')
     Name

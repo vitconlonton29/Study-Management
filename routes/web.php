@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -18,7 +19,11 @@ use Illuminate\Support\Facades\Route;
 //});
 
 //Cách viết route ngắn gọn hơn (khởi tạo tất cả trừ hàm show)
-Route::resource('course', \App\Http\Controllers\CourseController::class)->except('show');
+Route::resource('courses', CourseController::class)
+    ->except('show');
+
+//route cho datatable
+Route::get('courses/api', [CourseController::class, 'api'])->name('courses.api');
 
 Route::get('test', function () {
     return view('layout.master');

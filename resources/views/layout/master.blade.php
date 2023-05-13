@@ -40,6 +40,7 @@
         @include('layout.footer')
     </div>
 </div>
+{{--datatable--}}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 {{--jquery nên chèn trươớc tất cả các scrip--}}
 <script src="{{ asset('js/vendor.min.js') }}"></script>

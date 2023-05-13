@@ -1,5 +1,5 @@
 
-<form action="{{Route('course.store')}}" method="post">
+<form action="{{Route('courses.store')}}" method="post">
     @csrf
     Name: <input type="text" name="name" value="{{old('name')}}">
     @if($errors->has('name'))
