@@ -5,12 +5,28 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Course\StoreRequest;
 use App\Http\Requests\Course\UpdateRequest;
 use App\Models\Course;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use Yajra\DataTables\DataTables;
 
 class CourseController extends Controller
 {
+    private $model; //model = Course
+    private string $title='Course';
+
+    public function __construct()
+    {
+        $this->model= new Course();
+        $routeName= Route::currentRouteName();
+        $arr= explode('.', $routeName); //cắt chuỗi thành mảng
+        $arr = array_map('ucfirst', $arr); //Nối mảng thành chuỗi
+        $this->title=implode(' - ', $arr);
+//        dd($arr);
+        View::share('title', $this->title);
+    }
 
     public function index(Request $request)
     {
@@ -34,7 +50,12 @@ class CourseController extends Controller
 
     public function api()
     {
-        return DataTables::of(Course::query())
+
+//        $arr=[];
+//        $arr['data']=$this->model->paginate();
+//        return $arr;
+
+        return DataTables::of($this->model::query())
             ->editColumn('created_at',function ($object){
                 return $object->created_at->format('Y/m/d');
             })
@@ -54,8 +75,8 @@ class CourseController extends Controller
             ->rawColumns(['edit','delete'])
             ->make(true);
 //
-    }
 
+    }
 
     public function create()
     {
@@ -66,9 +87,9 @@ class CourseController extends Controller
     public function store(StoreRequest $request): RedirectResponse
     {
         //store kiểu OOP
-        $object = new Course();
+        $object = $this->model;
         //$object->fill($request->except('_token')); //Cách 1
-        $object->fill($request->validated()); //Cách 2: chỉ lấy những thằng đã được khai báo validate
+        $object->fill($request->validated()); //Cách 2: chỉ lấy những thằng đã được khai báo validate trong storerequest
         $object->save();
 
         //điều hướng về trang course.index
@@ -89,7 +110,7 @@ class CourseController extends Controller
     }
 
 
-    public function update(UpdateRequest $request, Course $course): RedirectResponse
+    public function update(UpdateRequest $request, $courseId): RedirectResponse
     {
         //Không hiểu sao cách này mình không làm được huhu
 //        $course ->update(
@@ -104,15 +125,25 @@ class CourseController extends Controller
 //        );
 
         //Cách làm theo OOP
-        $course->fill($request->except('_token', '_method'));
-        $course->save();
+        $object = $this->model->find($courseId);
+        $object->fill($request->except('_token', '_method'));
+        $object->save();
         return redirect()->route('courses.index');
     }
 
-    public function destroy(Course $course): RedirectResponse
+    public function destroy( $courseId): RedirectResponse
     {
-        $course->delete();
+        $object = $this->model->find($courseId);
+        $object->delete();
         return redirect()->route('courses.index');
 
+    }
+
+    public function apiName(Request $request)
+    {
+        return $this->model->where('name', 'like','%'. $request->get('q').'%')->get([
+            'id',
+            'name',
+        ]);
     }
 }
